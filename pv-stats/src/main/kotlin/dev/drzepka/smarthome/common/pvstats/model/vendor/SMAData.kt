@@ -1,9 +1,9 @@
-package dev.drzepka.smarthome.common.model.vendor
+package dev.drzepka.smarthome.common.pvstats.model.vendor
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import dev.drzepka.smarthome.common.model.sma.SMADashValues
-import dev.drzepka.smarthome.common.model.sma.SMAMeasurement
+import dev.drzepka.smarthome.common.pvstats.model.sma.SMADashValues
+import dev.drzepka.smarthome.common.pvstats.model.sma.SMAMeasurement
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets

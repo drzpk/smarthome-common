@@ -1,4 +1,6 @@
-package dev.drzepka.smarthome.common.util
+@file:Suppress("unused")
+
+package dev.drzepka.smarthome.common.pvstats
 
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser

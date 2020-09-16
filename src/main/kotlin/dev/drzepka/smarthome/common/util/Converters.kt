@@ -1,3 +1,5 @@
+@file:Suppress("unused")
+
 package dev.drzepka.smarthome.common.util
 
 private const val HEX_CHARS = "0123456789abcdef"

@@ -1,4 +1,4 @@
-package dev.drzepka.smarthome.common.model.sma
+package dev.drzepka.smarthome.common.pvstats.model.sma
 
 import org.omg.CORBA.Object
 

@@ -1,4 +1,4 @@
-package dev.drzepka.smarthome.common.model.vendor
+package dev.drzepka.smarthome.common.pvstats.model.vendor
 
 import java.util.*
 import kotlin.math.floor

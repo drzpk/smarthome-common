@@ -1,11 +1,13 @@
-package dev.drzepka.smarthome.common.model.sma
+@file:Suppress("unused")
+
+package dev.drzepka.smarthome.common.pvstats.model.sma
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import dev.drzepka.smarthome.common.util.SecondTimestampDeserializer
-import dev.drzepka.smarthome.common.util.SecondTimestampSerializer
+import dev.drzepka.smarthome.common.pvstats.SecondTimestampDeserializer
+import dev.drzepka.smarthome.common.pvstats.SecondTimestampSerializer
 import java.util.*
 import kotlin.collections.HashMap
 

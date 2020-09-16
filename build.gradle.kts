@@ -12,9 +12,7 @@ allprojects {
         jcenter()
         mavenLocal()
     }
-}
 
-subprojects {
     apply(plugin = "org.jetbrains.kotlin.jvm")
 
     dependencies {
