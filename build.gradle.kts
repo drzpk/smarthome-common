@@ -1,7 +1,9 @@
 plugins {
     kotlin("jvm") version "1.3.71"
     id("java-library")
+
     maven
+    id("maven-publish")
 }
 
 group = "dev.drzepka.smarthome"
@@ -42,5 +44,39 @@ tasks.jar {
 tasks.getByName<Jar>("sourcesJar") {
     subprojects.forEach { subproject ->
         from(subproject.sourceSets.main.get().allSource)
+    }
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+        }
+    }
+    repositories {
+        maven {
+            setUrl("https://gitlab.com/api/v4/projects/21177602/packages/maven")
+            credentials(HttpHeaderCredentials::class) {
+                val ciToken = System.getenv("CI_JOB_TOKEN")
+                val privateToken = findProperty("gitLabPrivateToken") as String? // from ~/.gradle/gradle.properties
+
+                when {
+                    ciToken != null -> {
+                        name = "Job-Token"
+                        value = ciToken
+                    }
+                    privateToken != null -> {
+                        name = "Private-Token"
+                        value = privateToken
+                    }
+                    else -> {
+                        logger.warn("Neither job nor private token were defined, publishing will fail")
+                    }
+                }
+            }
+            authentication {
+                create<HttpHeaderAuthentication>("header")
+            }
+        }
     }
 }
