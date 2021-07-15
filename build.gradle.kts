@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm") version "1.3.71"
+    kotlin("plugin.allopen") version "1.3.71"
     id("java-library")
 
     maven
@@ -7,7 +8,7 @@ plugins {
 }
 
 group = "dev.drzepka.smarthome"
-version = "1.0.0"
+version = "1.1.0"
 
 allprojects {
     repositories {
@@ -20,14 +21,34 @@ allprojects {
     dependencies {
         implementation(kotlin("stdlib-jdk8"))
 
+        compileOnly("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9")
         compileOnly("com.fasterxml.jackson.core:jackson-core:2.11.0")
         compileOnly("com.fasterxml.jackson.core:jackson-databind:2.11.0")
         compileOnly("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.11.0")
+        compileOnly("org.slf4j:slf4j-api:1.7.31")
+
+        testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.3.9")
+        testImplementation("org.junit.jupiter:junit-jupiter-api:5.7.1")
+        testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.7.1")
+        testImplementation("org.assertj:assertj-core:3.19.0")
+        testImplementation("org.mockito:mockito-core:3.9.0")
+        testImplementation("org.mockito:mockito-junit-jupiter:3.9.0")
+        testImplementation("org.mockito.kotlin:mockito-kotlin:3.1.0")
+
+        testImplementation("ch.qos.logback:logback-classic:1.2.1")
+    }
+
+    tasks.withType<Test> {
+        useJUnitPlatform()
     }
 }
 
 java {
     withSourcesJar()
+}
+
+allOpen {
+    annotation("dev.drzepka.smarthome.common.util.Mockable")
 }
 
 artifacts {
