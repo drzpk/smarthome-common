@@ -1,5 +1,6 @@
-package dev.drzepka.smarthome.common.pvstats.model.vendor
+package dev.drzepka.smarthome.common.pvstats.model.vendor.sofar
 
+import java.time.Instant
 import java.util.*
 import kotlin.math.floor
 
@@ -7,46 +8,46 @@ import kotlin.math.floor
  * Response format source: official Sofar datasheet
  */
 @Suppress("unused")
-class SofarData(val raw: Array<Byte>) : VendorData() {
+class SofarDataImpl(val raw: Array<Byte>, date: Instant = Instant.now()) : SofarData(date) {
 
-    val energyToday: Int
+    override val energyToday: Int
         get() = floor(getShort(TODAY_PRODUCTION, 1) * 10).toInt()
-    val energyTotal: Int
+    override val energyTotal: Int
         get() = getInt(TOTAL_PRODUCTION) * 1000
-    val currentPower: Int // Watt
+    override val currentPower: Int // Watt
         get() = floor(getShort(ACTIVE_POWER, 1) * 10).toInt()
-    val frequency: Float
+    override val frequency: Float
         get() = getShort(GRID_FREQUENCY, 100)
 
-    val generationHoursToday: Float
+    override val generationHoursToday: Float
         get() = getShort(TODAY_GENERATION_TIME, 60)
-    val generationHoursTotal: Int
+    override val generationHoursTotal: Int
         get() = getInt(TOTAL_GENERATION_TIME)
 
-    val pv1Voltage: Float
+    override val pv1Voltage: Float
         get() = getShort(PV1_VOLTAGE, 10)
-    val pv1Current: Float
+    override val pv1Current: Float
         get() = getShort(PV1_CURRENT, 100)
-    val pv1Power: Int // Watt
+    override val pv1Power: Int // Watt
         get() = floor(getShort(PV1_POWER, 1) * 10).toInt()
-    val pv2Voltage: Float
+    override val pv2Voltage: Float
         get() = getShort(PV2_VOLTAGE, 10)
-    val pv2Current: Float
+    override val pv2Current: Float
         get() = getShort(PV2_CURRENT, 100)
-    val pv2Power: Int // Watt
+    override val pv2Power: Int // Watt
         get() = floor(getShort(PV2_POWER, 1) * 10).toInt()
 
-    val phaseAVoltage: Float
+    override val phaseAVoltage: Float
         get() = getShort(PHASE_A_VOLTAGE, 10)
-    val phaseACurrent: Float
+    override val phaseACurrent: Float
         get() = getShort(PHASE_A_CURRENT, 100)
-    val phaseBVoltage: Float
+    override val phaseBVoltage: Float
         get() = getShort(PHASE_B_VOLTAGE, 10)
-    val phaseBCurrent: Float
+    override val phaseBCurrent: Float
         get() = getShort(PHASE_B_CURRENT, 100)
-    val phaseCVoltage: Float
+    override val phaseCVoltage: Float
         get() = getShort(PHASE_C_VOLTAGE, 10)
-    val phaseCCurrent: Float
+    override val phaseCCurrent: Float
         get() = getShort(PHASE_C_CURRENT, 100)
 
     private fun getShort(offset: Int, divider: Int): Float =
@@ -58,14 +59,21 @@ class SofarData(val raw: Array<Byte>) : VendorData() {
                     .or(raw[offset + 2].toInt().and(0xff).shl(8))
                     .or(raw[offset + 3].toInt().and(0xff))
 
-    override fun serialize(): Any = Base64.getEncoder().encodeToString(raw.toByteArray())
+    override fun serialize(): Any = date.toEpochMilli().toString() + SERIALIZATION_SEPARATOR + Base64.getEncoder().encodeToString(raw.toByteArray())
 
     companion object Offsets {
-        fun deserialize(data: Any): SofarData {
-            assert(data is String) { "Unknown data type: ${data::class.java.simpleName}" }
-            val raw = Base64.getDecoder().decode(data as String)
-            return SofarData(raw.toTypedArray())
+        fun deserialize(data: Any): SofarDataImpl {
+            if (data !is String)
+                throw IllegalArgumentException("Unknown data type: ${data::class.java.simpleName}")
+
+            val split = data.split(SERIALIZATION_SEPARATOR)
+            val date = Instant.ofEpochMilli(split[0].toLong())
+            val raw = Base64.getDecoder().decode(split[1])
+
+            return SofarDataImpl(raw.toTypedArray(), date)
         }
+
+        private const val SERIALIZATION_SEPARATOR = ":"
 
         // Basic info
         private const val OPERATING_STATE = 1
