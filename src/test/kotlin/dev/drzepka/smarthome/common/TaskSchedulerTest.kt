@@ -47,4 +47,20 @@ class TaskSchedulerTest {
             scheduler.schedule("name", Duration.ofMinutes(1)) {}
         }.withMessage("Task 'name' already scheduled")
     }
+
+    @Test
+    fun `should continue working if exception occurs in the handler function`() {
+        val scheduler = TaskScheduler()
+
+        var counter = 0
+        scheduler.schedule("name", Duration.ofMillis(1)) {
+            counter++
+            throw Exception("Test exception")
+        }
+
+        Thread.sleep(50)
+        scheduler.cancel("name")
+
+        then(counter).isGreaterThan(1)
+    }
 }

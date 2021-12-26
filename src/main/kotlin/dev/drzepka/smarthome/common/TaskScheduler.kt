@@ -14,7 +14,7 @@ import kotlin.math.ceil
 class TaskScheduler(threadPoolSize: Int = 8) {
     private val log by Logger()
     private val activeTasks = ConcurrentHashMap.newKeySet<String>()
-    private val scope = CoroutineScope(Executors.newFixedThreadPool(threadPoolSize).asCoroutineDispatcher() + SupervisorJob())
+    private val scope = CoroutineScope(Executors.newFixedThreadPool(threadPoolSize).asCoroutineDispatcher() + SupervisorJob() + createExceptionHandler())
 
     @Synchronized
     fun schedule(name: String, interval: Duration, task: (suspend () -> Unit)) {
@@ -34,6 +34,10 @@ class TaskScheduler(threadPoolSize: Int = 8) {
             log.warn("No scheduled task '{}' was found", name)
     }
 
+    private fun createExceptionHandler(): CoroutineExceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        log.error("Uncaught task scheduler exception", throwable)
+    }
+
     private fun startTask(name: String, interval: Duration, task: (suspend () -> Unit)) {
         scope.launch {
             delay(getInitialDelay(interval))
@@ -51,8 +55,8 @@ class TaskScheduler(threadPoolSize: Int = 8) {
                 if (millis < 1) {
                     val multiplicand = ceil(abs(millis) / interval.toMillis().toFloat()).toLong()
                     log.warn(
-                            "Execution of task '{}' took longer than it's interval, skipping, next {} intervals",
-                            name, multiplicand
+                        "Execution of task '{}' took longer than its interval, skipping, next {} intervals",
+                        name, multiplicand
                     )
 
                     nextPlannedExecution = nextPlannedExecution.plus(interval.multipliedBy(multiplicand))
