@@ -76,19 +76,20 @@ publishing {
     }
     repositories {
         maven {
-            setUrl("https://gitlab.com/api/v4/projects/21177602/packages/maven")
-            credentials(HttpHeaderCredentials::class) {
-                val ciToken = System.getenv("CI_JOB_TOKEN")
-                val privateToken = findProperty("gitLabPrivateToken") as String? // from ~/.gradle/gradle.properties
+            setUrl("https://maven.pkg.github.com/drzpk/smarthome-common")
+            credentials(PasswordCredentials::class) {
+                val githubUser = System.getenv("GITHUB_USER")
+                val githubToken = System.getenv("GITHUB_TOKEN")
+                val privateToken = findProperty("githubPersonalAccessToken") as String? // from ~/.gradle/gradle.properties
 
                 when {
-                    ciToken != null -> {
-                        name = "Job-Token"
-                        value = ciToken
+                    githubUser != null && githubToken != null -> {
+                        username = githubUser
+                        password = githubToken
                     }
                     privateToken != null -> {
-                        name = "Private-Token"
-                        value = privateToken
+                        username = "drzpk"
+                        password = privateToken
                     }
                     else -> {
                         logger.warn("Neither job nor private token were defined, publishing will fail")
@@ -96,7 +97,7 @@ publishing {
                 }
             }
             authentication {
-                create<HttpHeaderAuthentication>("header")
+                create<BasicAuthentication>("basic")
             }
         }
     }
