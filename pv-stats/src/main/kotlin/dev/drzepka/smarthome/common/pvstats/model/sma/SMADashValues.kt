@@ -1,7 +1,5 @@
 package dev.drzepka.smarthome.common.pvstats.model.sma
 
-import org.omg.CORBA.Object
-
 @Suppress("CAST_NEVER_SUCCEEDS", "UNCHECKED_CAST")
 open class SMADashValues : HashMap<String, Any>() {
 
@@ -15,13 +13,13 @@ open class SMADashValues : HashMap<String, Any>() {
         return property["val"] as String
     }
 
-    private fun getPropertyObject(name: String): Map<String, Object> {
+    private fun getPropertyObject(name: String): Map<String, Any> {
         val result = get("result") as Map<String, Any>
         val device = result[result.keys.first()] as Map<String, Any>
 
         val property = device[name] as Map<String, Any>
-        val firstItem = property["1"] as List<Object>
-        return firstItem[0] as Map<String, Object>
+        val firstItem = property["1"] as List<Any>
+        return firstItem[0] as Map<String, Any>
     }
 
     companion object {
