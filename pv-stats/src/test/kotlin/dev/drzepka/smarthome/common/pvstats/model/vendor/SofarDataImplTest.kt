@@ -34,7 +34,8 @@ internal class SofarDataImplTest {
 
     @Test
     fun `should serialize deserialize data`() {
-        val sofarData = SofarDataImpl(getRegistersData(), Instant.now().minusSeconds(100))
+        val trimmedInstant = Instant.ofEpochMilli(Instant.now().minusSeconds(100).toEpochMilli())
+        val sofarData = SofarDataImpl(getRegistersData(), trimmedInstant)
 
         val serialized = sofarData.serialize()
         val deserialized = SofarDataImpl.deserialize(serialized)
